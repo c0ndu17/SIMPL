@@ -1,1 +1,4 @@
-Hello World, and Fuck you C!
+program trivial
+begin
+    relax
+end

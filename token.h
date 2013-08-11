@@ -42,11 +42,7 @@ typedef enum {
 	TOKEN_TRUE,
 	TOKEN_WHILE,
 	TOKEN_WRITE,
-<<<<<<< HEAD
 	
-=======
-
->>>>>>> e6d3b47ddc55c177892c8c2af0b05ad614f65b7f
 	/* relational operators */
 	/* the order is significant -- it allows us to do range checking in the
 	 * parser */
