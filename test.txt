@@ -1,4 +1,5 @@
 program trivial
 begin
     relax
+    1234
 end

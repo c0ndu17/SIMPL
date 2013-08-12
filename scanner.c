@@ -174,7 +174,17 @@ void process_number(token_t *token)
      * - build numbers (up to the specified maximum magnitude)
      * - store in the appropriate token field
      * - set the appropriate token type
+     * - Error on max int and chars
      */
+     int num;
+     num = ch -'0';
+     next_char();
+     while(isdigit(ch)){
+        num = (( 10 * num ) + (ch - '0'));
+        next_char();
+     }
+     token->type=TOKEN_NUMBER;
+     token->value=num;
 }
 
 /**
@@ -208,20 +218,17 @@ void process_word(token_t *token)
         lexeme[i++] = ch;
         next_char();
     }
-    printf("%s", lexeme);
     /* do a binary search through the array of reserved words */
     /* TODO: you MUST use binary search */
-    high=sizeof(reserved)/sizeof(rword_t);
+    high=NUM_RESERVED_WORDS;
     low=0;
 
     while(low<=high){
         mid = (high+low)/2;
-        printf("\nlow: %d\t mid:%d\t high:%d\t", low, mid, high);
         cmp = strcmp(lexeme, reserved[mid].word);
         if(cmp == 0){
-          printf("Found %c", lexeme);
-          token->type= reserved[mid].type;
-          return;
+          token -> type = reserved[mid].type;
+          break;
         }
         if(cmp > 0){
           low = mid+1;
@@ -230,10 +237,14 @@ void process_word(token_t *token)
           high=mid-1;
         }
     }
-    printf("%s\n", lexeme);
     /* if id was not recognised as a reserved word, it is an identifier */
     /* TODO */
-    token->type= TOKEN_ID;
+
+    if(cmp!=0){
+       token->type= TOKEN_ID;
+       while(i>=0)
+         token->lexeme[i]=lexeme[i--];
+    }
 }
 
 void skip_comment(void)
