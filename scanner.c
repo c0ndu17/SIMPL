@@ -3,7 +3,7 @@
  *
  *
  *
- * @author  W. H. K. Bester
+ * @author  G.W.A. Phillips, 16512561
  * @date    2013/07/08
  */
 
@@ -36,46 +36,46 @@ static rword_t reserved[] = {   /* reserved words            */
     /* TODO:
      * - populate with appropriate reserved-word-strings--token-type pairs
      * - must be ordered alphabetically by reserved-word-string
-     */
+
     {"end-of-file", TOKEN_EOF },
     {"identifier", TOKEN_ID},
     {"number literal", TOKEN_NUMBER},
-    {"string literal", TOKEN_STRING},
-    {"'and'", TOKEN_AND},
-    {"'array'", TOKEN_ARRAY},
-    {"'begin'", TOKEN_BEGIN},
-    {"'boolean'", TOKEN_BOOLEAN},
-    {"'define'", TOKEN_DEFINE},
-    {"'do'", TOKEN_DO},
-    {"'else'", TOKEN_ELSE},
-    {"'elsif'", TOKEN_ELSEIF},
-    {"'end'", TOKEN_END},
-    {"'false'", TOKEN_FALSE},
-    {"'if'", TOKEN_IF},
-    {"'integer'", TOKEN_INTEGER},
-    {"'leave'", TOKEN_LEAVE},
-    {"'not'", TOKEN_NOT},
-    {"'program'", TOKEN_PROGRAM},
-    {"'read'", TOKEN_READ},
-    {"'relax'", TOKEN_RELAX},
-    {"'then'", TOKEN_THEN},
-    {"'true'", TOKEN_TRUE},
-    {"'while'", TOKEN_WHILE},
-    {"'write'", TOKEN_WRITE},
-    {"'='", TOKEN_EQUAL},
+    {"string literal", TOKEN_STRING},*/
+    {"array", TOKEN_ARRAY},
+    {"begin", TOKEN_BEGIN},
+    {"boolean", TOKEN_BOOLEAN},
+    {"define", TOKEN_DEFINE},
+    {"do", TOKEN_DO},
+    {"else", TOKEN_ELSE},
+    {"elsif", TOKEN_ELSIF},
+    {"end", TOKEN_END},
+    {"false", TOKEN_FALSE},
+    {"if", TOKEN_IF},
+    {"integer", TOKEN_INTEGER},
+    {"leave", TOKEN_LEAVE},
+    {"not", TOKEN_NOT},
+    {"program", TOKEN_PROGRAM},
+    {"read", TOKEN_READ},
+    {"relax", TOKEN_RELAX},
+    {"then", TOKEN_THEN},
+    {"true", TOKEN_TRUE},
+    {"while", TOKEN_WHILE},
+    {"write", TOKEN_WRITE}/* ,
+   {"'='", TOKEN_EQUAL},
     {"'>='", TOKEN_GREATER_EQUAL},
-    {"'>'", TOKEN_GREATER THAN},
+    {"'>'", TOKEN_GREATER_THAN},
     {"'<='", TOKEN_LESS_EQUAL},
     {"'<'", TOKEN_LESS_THAN},
     {"'#'", TOKEN_NOT_EQUAL},
     {"'-'", TOKEN_MINUS},
     {"'or'", TOKEN_OR},
     {"'+'", TOKEN_PLUS},
+    {"'and'", TOKEN_AND},
     {"'/'", TOKEN_DIVIDE},
     {"'*'", TOKEN_MULTIPLY},
     {"'%'", TOKEN_REMAINDER},
     {"']'", TOKEN_CLOSE_BRACKET},
-    {"')'", TOKEN_CLOSE_PARANTHESES},
+    {"')'", TOKEN_CLOSE_PARENTHESIS},
     {"','", TOKEN_COMMA},
     {"'.'", TOKEN_DOT},
     {"':='", TOKEN_GETS},
@@ -83,7 +83,7 @@ static rword_t reserved[] = {   /* reserved words            */
     {"'('", TOKEN_OPEN_PARENTHESIS},
     {"'\"'", TOKEN_QUOTE},
     {"';'", TOKEN_SEMICOLON},
-    {"'->'", TOKEN_TO}
+    {"'->'", TOKEN_TO}*/
 };
 
 #define NUM_RESERVED_WORDS (sizeof(reserved) / sizeof(rword_t))
@@ -114,11 +114,11 @@ void get_token(token_t *token)
 {
     /* remove whitespace */
     /* TODO: skip all whitespace characters */
-
+    while(isspace(ch))
+        next_char();
     /* get the next token */
     if (!feof(src_file)) {
         if (isalpha(ch)) {
-
             /* process a word */
             process_word(token);
 
@@ -154,7 +154,7 @@ void next_char(void)
     /* TODO:
      * - get the next character from the source file
      * - increment the line number on EOL
-                                                                                                            printf("fine\n");
+               printf("fine\n");
      */
     if((ch = fgetc(src_file))==EOF)
         return;
@@ -200,23 +200,64 @@ void process_word(token_t *token)
 
     /* check that the id length is less than the maximum */
     /* TODO: build the "word" in the lexeme array */
-
+    i=0;
+    while(lexeme[i]!=0)
+        lexeme[i++]=0;
+    i=0;
+    while( !isspace(ch)&& i < MAX_ID_LENGTH ){
+        lexeme[i++] = ch;
+        next_char();
+    }
+    printf("%s", lexeme);
     /* do a binary search through the array of reserved words */
     /* TODO: you MUST use binary search */
+    high=sizeof(reserved)/sizeof(rword_t);
+    low=0;
 
+    while(low<=high){
+        mid = (high+low)/2;
+        printf("\nlow: %d\t mid:%d\t high:%d\t", low, mid, high);
+        cmp = strcmp(lexeme, reserved[mid].word);
+        if(cmp == 0){
+          printf("Found %c", lexeme);
+          token->type= reserved[mid].type;
+          return;
+        }
+        if(cmp > 0){
+          low = mid+1;
+        }
+        if(cmp < 0){
+          high=mid-1;
+        }
+    }
+    printf("%s\n", lexeme);
     /* if id was not recognised as a reserved word, it is an identifier */
     /* TODO */
+    token->type= TOKEN_ID;
 }
 
 void skip_comment(void)
 {
     int start_line;
-
+    char tmp;
     /* TODO:
      * - skip nested comments
      * - terminate on error if not properly nested
      * - show such errors for the line on which the unclosed comment starts
      */
+    start_line=line_number;
+    while(ch!=EOF){
+        tmp = ch;
+        next_char();
+        if(ch=='\n')
+        if(tmp=='/'&&ch=='*')
+            skip_comment();
+        if(tmp=='*'&&ch=='/')
+            return;
+    }
+    if(ch==EOF)
+      printf("The comments are not nested correctly.\n Error on line %d", start_line);
+    return;
 }
 
 /* vim: textwidth=80 tabstop=4
