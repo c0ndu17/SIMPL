@@ -2,4 +2,5 @@ program trivial
 begin
     relax
     1234
+    "Teko Modise"
 end

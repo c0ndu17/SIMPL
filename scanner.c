@@ -132,6 +132,7 @@ void get_token(token_t *token)
             /* process a string */
             case '"':
                 /* TODO: process the string */
+                process_string(token);
                 break;
 
             /* process other tokens */
@@ -200,7 +201,19 @@ void process_string(token_t *token)
      *   temporary measure and will change in Part III
      * - ONLY printable ASCII characters are allowed; man 3 isalpha
      * - set the appropriate token type
-     */
+    */
+    char (*String)[MAX_STRING_LEN];
+    int i;
+    i=0;
+    next_char();
+    String = malloc(MAX_STRING_LEN);
+    while(isprint(ch) && ch !='"' ){
+        String[i++]=ch;
+        next_char();
+    }
+    printf(sizeof(String));
+    token->type=TOKEN_STRING;
+    token->string = &String;
 }
 
 void process_word(token_t *token)
